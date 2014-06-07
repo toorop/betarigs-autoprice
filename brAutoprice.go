@@ -200,7 +200,6 @@ OPTIONS:
 					if err != nil || !success {
 						dsp.BodyAddLine(fmt.Sprintf("%s - ERR: Unable to update rig Price. %v", getTimeStamp(), err))
 					} else {
-						dsp.BodyAddLine(fmt.Sprintf("%s - : Unable to update rig Price. %v", getTimeStamp(), err))
 						dsp.BodyAddLine(fmt.Sprintf("%s - Rig price changed to minPrice: %f %s", getTimeStamp(), newPrice, algo.MarketPrice.Unit))
 					}
 				}
