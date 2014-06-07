@@ -13,12 +13,12 @@ If this tool is useful for you and/or if it helps you to win more money, please 
 [1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB](http://tinyurl.com/mccsoez)
 
 
-###Download Binaries
-Coming soon
+###Binaries
 
-* Linux: 
-* MacOs: 
-* Windows:
+* Windows : [http://dl.toorop.fr/softs/brAutoprice/windows/brAutoprice.exe](http://dl.toorop.fr/softs/brAutoprice/windows/brAutoprice.exe "brAutoprice for windows")
+* MacOs : [http://dl.toorop.fr/softs/brAutoprice/macos/brAutoprice](http://dl.toorop.fr/softs/brAutoprice/macos/brAutoprice "brAutoprice for Mac")
+* Linux : [http://dl.toorop.fr/softs/brAutoprice/linux/brAutoprice](http://dl.toorop.fr/softs/brAutoprice/linux/brAutoprice "brAutoprice for Linux")
+
 
 ###Options
 
