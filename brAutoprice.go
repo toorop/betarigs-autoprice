@@ -164,7 +164,7 @@ OPTIONS:
 				time.Sleep(mailLoopDuration * time.Second)
 				continue
 			}
-			dsp.BodyAddLine(fmt.Sprintf("%s - Current rig price: %f %s", getTimeStamp(), rig.Price.PerSpeedUnit.Value, rig.Price.PerSpeedUnit.Unit))
+			dsp.BodyAddLine(fmt.Sprintf("%s - Current rig price: %v %s", getTimeStamp(), rig.Price.PerSpeedUnit.Value, rig.Price.PerSpeedUnit.Unit))
 			// Get current market price
 			algo, err = btr.GetAlgorithm(rig.Algorithm.Id)
 			if err != nil {
@@ -179,28 +179,38 @@ OPTIONS:
 				time.Sleep(mailLoopDuration * time.Second)
 				continue
 			}
-			dsp.BodyAddLine(fmt.Sprintf("%s - Current market price: %f %s", getTimeStamp(), marketPrice, algo.MarketPrice.Unit))
+			dsp.BodyAddLine(fmt.Sprintf("%s - Current market price: %v %s", getTimeStamp(), marketPrice, algo.MarketPrice.Unit))
 
 			// Change price ?
 			// if market price == 0 or (me==me)
 			if marketPrice != 0 && marketPrice != rig.Price.PerSpeedUnit.Value {
 				newPrice := marketPrice + (priceDiff * marketPrice / 100)
-				//fmt.Println(int(newPrice * 1000000))
-				//fmt.Println(int(rig.Price.PerSpeedUnit.Value * 1000000))
-				// Faire un diff sur la valeur abs des prix -0.1%
-				if newPrice > minPrice && math.Abs(newPrice*1000000-rig.Price.PerSpeedUnit.Value*1000000) > 1 {
+				/*dsp.BodyAddLine(fmt.Sprintf("%v", newPrice*10000000))
+				dsp.BodyAddLine(fmt.Sprintf("%v", rig.Price.PerSpeedUnit.Value*10000000))
+				dsp.BodyAddLine(fmt.Sprintf("%v", math.Abs(newPrice*10000000-rig.Price.PerSpeedUnit.Value*10000000)))
+				dsp.BodyAddLine(fmt.Sprintf("%v", newPrice > minPrice))*/
+				// newprice ?
+				if newPrice > minPrice && math.Abs(newPrice*100000000-rig.Price.PerSpeedUnit.Value*100000000) > 100 {
 					success, err := btr.UpdateRigPricePerSpeedUnit(uint32(rigId), newPrice)
 					if err != nil || !success {
 						dsp.BodyAddLine(fmt.Sprintf("%s - ERR: Unable to update rig Price. %v", getTimeStamp(), err))
 					} else {
-						dsp.BodyAddLine(fmt.Sprintf("%s - Rig prince changed to newPrice: %f %s", getTimeStamp(), newPrice, algo.MarketPrice.Unit))
+						dsp.BodyAddLine(fmt.Sprintf("%s - Rig prince changed to newPrice: %v %s", getTimeStamp(), newPrice, algo.MarketPrice.Unit))
 					}
-				} else if rig.Price.PerSpeedUnit.Value != minPrice && marketPrice < minPrice {
+				} else if rig.Price.PerSpeedUnit.Value != minPrice && marketPrice < minPrice && math.Abs(minPrice*100000000-rig.Price.PerSpeedUnit.Value*100000000) > 100 {
 					success, err := btr.UpdateRigPricePerSpeedUnit(uint32(rigId), minPrice)
 					if err != nil || !success {
 						dsp.BodyAddLine(fmt.Sprintf("%s - ERR: Unable to update rig Price. %v", getTimeStamp(), err))
 					} else {
-						dsp.BodyAddLine(fmt.Sprintf("%s - Rig price changed to minPrice: %f %s", getTimeStamp(), newPrice, algo.MarketPrice.Unit))
+						dsp.BodyAddLine(fmt.Sprintf("%s - Rig price changed to minPrice: %v %s", getTimeStamp(), minPrice, algo.MarketPrice.Unit))
+					}
+
+				} else if marketPrice >= minPrice && math.Abs(marketPrice*100000000-rig.Price.PerSpeedUnit.Value*100000000) > 100 {
+					success, err := btr.UpdateRigPricePerSpeedUnit(uint32(rigId), marketPrice)
+					if err != nil || !success {
+						dsp.BodyAddLine(fmt.Sprintf("%s - ERR: Unable to update rig Price. %v", getTimeStamp(), err))
+					} else {
+						dsp.BodyAddLine(fmt.Sprintf("%s - Rig price changed to marketPrice: %v %s", getTimeStamp(), marketPrice, algo.MarketPrice.Unit))
 					}
 				}
 			}
