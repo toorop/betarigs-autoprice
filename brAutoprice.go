@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/toorop/go-betarigs"
-	"github.com/wsxiaoys/terminal"
 	"math"
 	"os"
+	"os/exec"
+	"runtime"
 	"time"
 )
 
@@ -17,6 +18,18 @@ const (
 	logTimeLayout    = "3:04:05"
 	mailLoopDuration = 30
 )
+
+// clearSreen reset display
+func clearScreen() {
+	var c *exec.Cmd
+	if runtime.GOOS == "windows" {
+		c = exec.Command("cmd", "/c", "cls")
+	} else {
+		c = exec.Command("clear")
+	}
+	c.Stdout = os.Stdout
+	c.Run()
+}
 
 type display struct {
 	Header []string
@@ -34,7 +47,7 @@ func (d *display) BodyAddLine(line string) {
 
 // Refresh refresh the display
 func (d *display) Refresh() {
-	terminal.Stdout.Clear().Move(0, 0)
+	clearScreen()
 	for _, h := range d.Header {
 		fmt.Println(h)
 	}
@@ -73,6 +86,10 @@ func getMarketPrice(algo uint32, rigId uint32, btr *betarigs.Betarigs) (maketPri
 	}
 	// Preventing to return our rig price.If it's the case rig price never goes up
 	for _, rig := range rigs {
+		// Not rented yet or score < 9
+		if rig.Stats.Total.NumberOfRentals == 0 || rig.Stats.Month.NumberOfRentals == 0 || rig.Stats.Month.Score < 9 {
+			continue
+		}
 		if rig.Id != rigId {
 			maketPrice = rig.Price.PerSpeedUnit.Value
 			break
